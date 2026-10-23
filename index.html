@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>المستشار القانوني اليمني الذكي</title>
 
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f5f8;
+    color: #17243a;
+    margin: 0;
+}
+header {
+    background: #102442;
+    color: white;
+    text-align: center;
+    padding: 25px 12px;
+}
+header h1 {
+    color: #e5bd65;
+}
+main {
+    max-width: 850px;
+    margin: 20px auto;
+    padding: 15px;
+}
+section {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+}
+h2 {
+    color: #102442;
+}
+input, textarea, button {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin: 7px 0;
+    border-radius: 7px;
+    border: 1px solid #ccd3dd;
+    font-size: 16px;
+}
+button {
+    background: #102442;
+    color: white;
+    cursor: pointer;
+}
+footer {
+    text-align: center;
+    background: #102442;
+    color: white;
+    padding: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>المستشار القانوني اليمني الذكي</h1>
+    <p>الموقع القانوني اليمني | yemenilaw.com</p>
+    <p>نظام خاص لإدارة القضايا والبحث القانوني</p>
+</header>
+
+<main>
+
+<section>
+    <h2>قضية جديدة</h2>
+
+    <input id="caseTitle" placeholder="عنوان القضية">
+    <input id="court" placeholder="اسم المحكمة">
+
+    <textarea id="facts"
+    placeholder="اكتب وقائع القضية"></textarea>
+
+    <button onclick="saveCase()">حفظ القضية</button>
+
+    <p id="message"></p>
+</section>
+
+<section>
+    <h2>قضاياي</h2>
+    <div id="cases"></div>
+</section>
+
+<section>
+    <h2>البحث في الموقع القانوني اليمني</h2>
+
+    <p>ابحث عن القوانين والصيغ القانونية المنشورة في الموقع.</p>
+
+    <a href="https://yemenilaw.com/" target="_blank">
+        فتح الموقع القانوني اليمني
+    </a>
+</section>
+
+</main>
+
+<footer>
+    الموقع القانوني اليمني | yemenilaw.com
+</footer>
+
+<script>
+function saveCase() {
+    const title = document.getElementById('caseTitle').value.trim();
+    const court = document.getElementById('court').value.trim();
+    const facts = document.getElementById('facts').value.trim();
+
+    if (!title) {
+        alert('يرجى كتابة عنوان القضية');
+        return;
+    }
+
+    const cases = JSON.parse(
+        localStorage.getItem('legalCases') || '[]'
+    );
+
+    cases.push({
+        title: title,
+        court: court,
+        facts: facts,
+        date: new Date().toLocaleDateString('ar')
+    });
+
+    localStorage.setItem('legalCases', JSON.stringify(cases));
+
+    document.getElementById('caseTitle').value = '';
+    document.getElementById('court').value = '';
+    document.getElementById('facts').value = '';
+
+    showCases();
+
+    document.getElementById('message').textContent =
+        'تم حفظ القضية على هذا الجهاز.';
+}
+
+function escapeText(s) {
+    return String(s || '').replace(/[&<>"']/g, function(c) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[c];
+    });
+}
+
+function showCases() {
+    const cases = JSON.parse(
+        localStorage.getItem('legalCases') || '[]'
+    );
+
+    document.getElementById('cases').innerHTML =
+        cases.map(c =>
+            '<article>' +
+            '<h3>' + escapeText(c.title) + '</h3>' +
+            '<p>المحكمة: ' + escapeText(c.court) + '</p>' +
+            '<p>' + escapeText(c.facts) + '</p>' +
+            '<hr></article>'
+        ).join('') || 'لا توجد قضايا محفوظة.';
+}
+
+showCases();
+</script>
+
+</body>
+</html>
